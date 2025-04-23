@@ -867,43 +867,49 @@
                     let totalItems = res.items.length;
                     
                     res.items.forEach((itemRef) => {
-                        // Get metadata
-                        itemRef.getMetadata()
-                            .then((metadata) => {
-                                const customMetadata = metadata.customMetadata || {};
-                                const groupName = customMetadata.groupName || 'לא צוין';
-                                const marketingMessage = customMetadata.marketingMessage || itemRef.name.split('_')[0];
-                                let adType = customMetadata.adType;
+                        getDownloadURL(itemRef)
+                            .then(url => {
+                                // Extract filename parts
+                                const fullName = itemRef.name;
+                                const nameParts = fullName.split('_');
+                                let groupName = 'לא צוין';
+                                let marketingMessage = fullName.split('.')[0];
                                 
-                                // If adType is not in metadata, try to detect from file extension
-                                if (!adType) {
-                                    adType = detectFileType(itemRef.name);
+                                // If filename follows our naming convention
+                                if (nameParts.length >= 2) {
+                                    groupName = nameParts[0];
+                                    // The timestamp might be the last part before the extension
+                                    const lastPartIndex = fullName.lastIndexOf('_');
+                                    const extensionIndex = fullName.lastIndexOf('.');
+                                    if (lastPartIndex > 0 && extensionIndex > lastPartIndex) {
+                                        // Check if last part is a timestamp (all digits)
+                                        const possibleTimestamp = fullName.substring(lastPartIndex + 1, extensionIndex);
+                                        if (/^\d+$/.test(possibleTimestamp)) {
+                                            // If it's a timestamp, use everything between first _ and last _
+                                            marketingMessage = fullName.substring(
+                                                fullName.indexOf('_') + 1,
+                                                lastPartIndex
+                                            );
+                                        } else {
+                                            // If not a timestamp, use everything after first _
+                                            marketingMessage = fullName.substring(
+                                                fullName.indexOf('_') + 1,
+                                                extensionIndex
+                                            );
+                                        }
+                                    }
                                 }
                                 
-                                // Get download URL
-                                return getDownloadURL(itemRef).then(url => {
-                                    return { 
-                                        url, 
-                                        name: itemRef.name,
-                                        groupName,
-                                        marketingMessage,
-                                        adType
-                                    };
-                                });
-                            })
-                            .catch(error => {
-                                console.warn("Error getting metadata:", error);
-                                // Use defaults and detect type from filename
-                                const adType = detectFileType(itemRef.name);
-                                return getDownloadURL(itemRef).then(url => {
-                                    return { 
-                                        url, 
-                                        name: itemRef.name,
-                                        groupName: 'לא צוין',
-                                        marketingMessage: itemRef.name.split('.')[0],
-                                        adType
-                                    };
-                                });
+                                // Detect file type from extension
+                                const adType = detectFileType(fullName);
+                                
+                                return { 
+                                    url, 
+                                    name: fullName,
+                                    groupName,
+                                    marketingMessage,
+                                    adType
+                                };
                             })
                             .then(fileData => {
                                 // Skip filtered items
