@@ -79,13 +79,47 @@
             animation: fadeInDown 1s ease-out;
         }
 
+        .birthday-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
         .birthday-number {
             font-size: 8rem;
             font-weight: bold;
             color: #34495e;
             text-shadow: 3px 3px 6px rgba(0,0,0,0.2);
-            margin-bottom: -20px;
             animation: bounce 2s ease-in-out infinite;
+        }
+
+        .profile-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 5px solid #f39c12;
+            box-shadow: 0 10px 25px rgba(243, 156, 18, 0.4);
+            transition: all 0.3s ease;
+            animation: profileGlow 3s ease-in-out infinite alternate;
+        }
+
+        .profile-image:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 35px rgba(243, 156, 18, 0.6);
+        }
+
+        @keyframes profileGlow {
+            0% { box-shadow: 0 10px 25px rgba(243, 156, 18, 0.4); }
+            100% { box-shadow: 0 15px 35px rgba(243, 156, 18, 0.6), 0 0 20px rgba(243, 156, 18, 0.3); }
         }
 
         .birthday-text {
@@ -111,34 +145,6 @@
             text-align: center;
         }
 
-        .profile-section {
-            text-align: center;
-            margin: 30px 0;
-            animation: fadeInUp 1s ease-out 0.9s both;
-        }
-
-        .profile-image {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            border: 5px solid #f39c12;
-            box-shadow: 0 10px 25px rgba(243, 156, 18, 0.4);
-            margin: 0 auto 20px;
-            display: block;
-            transition: all 0.3s ease;
-            animation: profileGlow 3s ease-in-out infinite alternate;
-        }
-
-        .profile-image:hover {
-            transform: scale(1.1);
-            box-shadow: 0 15px 35px rgba(243, 156, 18, 0.6);
-        }
-
-        @keyframes profileGlow {
-            0% { box-shadow: 0 10px 25px rgba(243, 156, 18, 0.4); }
-            100% { box-shadow: 0 15px 35px rgba(243, 156, 18, 0.6), 0 0 20px rgba(243, 156, 18, 0.3); }
-        }
-
         .main-card {
             background: white;
             border-radius: 25px;
@@ -161,7 +167,12 @@
             font-size: 1.2rem;
         }
 
-        .form-group input[type="text"] {
+        .form-group .required {
+            color: #e74c3c;
+            margin-right: 5px;
+        }
+
+        .form-group input[type="text"], .form-group textarea {
             width: 100%;
             padding: 18px;
             border: 3px solid #f39c12;
@@ -169,9 +180,15 @@
             font-size: 1.1rem;
             transition: all 0.3s ease;
             background: #fdfefe;
+            font-family: inherit;
         }
 
-        .form-group input[type="text"]:focus {
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-group input[type="text"]:focus, .form-group textarea:focus {
             outline: none;
             border-color: #e67e22;
             box-shadow: 0 0 15px rgba(243, 156, 18, 0.3);
@@ -275,6 +292,7 @@
             color: #2c3e50;
             margin-bottom: 20px;
             font-weight: 700;
+            line-height: 1.4;
         }
 
         .modal-buttons {
@@ -379,6 +397,10 @@
 
         @media (max-width: 768px) {
             .container { padding: 15px; }
+            .birthday-header {
+                flex-direction: column;
+                gap: 15px;
+            }
             .birthday-number { font-size: 6rem; }
             .main-card { padding: 25px; }
             .guest-selector { grid-template-columns: repeat(auto-fit, minmax(60px, 1fr)); }
@@ -396,26 +418,27 @@
 
     <div class="container">
         <div class="header">
-            <div class="birthday-number">50</div>
+            <div class="birthday-header">
+                <div class="birthday-number">50</div>
+                <div class="profile-section">
+                    <img src="ariel.png" alt="אריאל" class="profile-image">
+                </div>
+            </div>
             <div class="birthday-text">יום הולדת לאריאל</div>
             <div class="date-info">
                 <div class="date-text">יום שישי, 25 ביולי 2025 | 11:00-17:00</div>
-            </div>
-            
-            <div class="profile-section">
-                <img src="ariel.png" alt="אריאל" class="profile-image">
             </div>
         </div>
 
         <div class="main-card" id="rsvpForm">
             <form id="birthdayForm">
                 <div class="form-group">
-                    <label for="fullName">שם מלא:</label>
+                    <label for="fullName"><span class="required">*</span>שם מלא:</label>
                     <input type="text" id="fullName" name="fullName" required placeholder="הכנס את שמך המלא">
                 </div>
 
                 <div class="form-group">
-                    <label>כמה מגיעים?</label>
+                    <label><span class="required">*</span>כמה מגיעים?</label>
                     <div class="guest-selector">
                         <div class="guest-option">
                             <input type="radio" id="guests1" name="guestCount" value="1" required>
@@ -460,6 +483,11 @@
                     </div>
                 </div>
 
+                <div class="form-group">
+                    <label for="comments">הערות:</label>
+                    <textarea id="comments" name="comments" placeholder="יש לכם הערות מיוחדות? רעיונות? בקשות? שתפו אותנו..." rows="4"></textarea>
+                </div>
+
                 <button type="submit" class="submit-btn">
                     🎉 אישור הגעה 🎉
                 </button>
@@ -501,25 +529,30 @@
             
             const fullName = document.getElementById('fullName').value.trim();
             const guestCount = document.querySelector('input[name="guestCount"]:checked');
+            const comments = document.getElementById('comments').value.trim();
             
             if (!fullName || !guestCount) {
-                alert('אנא מלא את כל השדות');
+                alert('אנא מלא את כל השדות החובה (שם מלא ומספר מגיעים)');
                 return;
             }
 
             formData = {
                 name: fullName,
-                guests: guestCount.value
+                guests: guestCount.value,
+                comments: comments
             };
 
             // Show confirmation modal
             const guestText = formData.guests == "1" ? "אדם אחד" : `${formData.guests} אנשים`;
-            modalTitle.innerHTML = `
-                שלום ${formData.name}!<br><br>
-                בחרת להגיע עם ${guestText}<br><br>
-                האם אתה מאשר את ההגעה?
-            `;
+            let modalText = `שלום ${formData.name}!<br><br>בחרת להגיע עם ${guestText}`;
             
+            if (formData.comments) {
+                modalText += `<br><br>הערות: "${formData.comments}"`;
+            }
+            
+            modalText += `<br><br>האם אתה מאשר את ההגעה?`;
+            
+            modalTitle.innerHTML = modalText;
             modal.style.display = 'flex';
         });
 
@@ -579,7 +612,7 @@
         }
 
         // Add some interactive animations
-        document.querySelectorAll('input[type="text"]').forEach(input => {
+        document.querySelectorAll('input[type="text"], textarea').forEach(input => {
             input.addEventListener('focus', function() {
                 this.parentElement.style.transform = 'scale(1.02)';
             });
