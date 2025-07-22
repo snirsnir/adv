@@ -559,13 +559,37 @@
         confirmBtn.addEventListener('click', function() {
             modal.style.display = 'none';
             
-            // Hide form and show success message
-            rsvpForm.style.display = 'none';
-            successText.textContent = `תודה ${formData.name}!`;
-            successMessage.style.display = 'block';
+            // Disable submit button
+            const submitBtn = document.getElementById('confirmBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'שולח...';
+
+            // Submit to Google Forms
+            const googleFormUrl = 'https://docs.google.com/forms/u/0/d/e/1FAIpQLSdFxcGz5QuR5gTNIDhZUbXY87SpE9nRI7E9JOlpR7iqnkOKZQ/formResponse';
             
-            // Add some celebration effects
-            createConfetti();
+            const formDataToSend = new FormData();
+            formDataToSend.append('entry.306866982', formData.name); // שם מלא
+            formDataToSend.append('entry.723692020', formData.guests); // כמה מגיעים
+            formDataToSend.append('entry.686786869', formData.comments); // הערות
+            
+            fetch(googleFormUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: formDataToSend
+            }).then(() => {
+                // Hide form and show success message
+                rsvpForm.style.display = 'none';
+                successText.textContent = `תודה ${formData.name}!`;
+                successMessage.style.display = 'block';
+                
+                // Add some celebration effects
+                createConfetti();
+            }).catch(() => {
+                // Re-enable button on error
+                submitBtn.disabled = false;
+                submitBtn.textContent = '✅ אישור';
+                alert('אירעה שגיאה, אנא נסה שוב');
+            });
         });
 
         cancelBtn.addEventListener('click', function() {
